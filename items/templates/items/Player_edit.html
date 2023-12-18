@@ -1,0 +1,94 @@
+{% extends 'items/Player.html' %}
+
+{% block content %}
+{% load custom_filters %}
+<form method="post" action="{% url 'update' player_name %}">
+  {% csrf_token %}
+<div>
+    <table width="100%" border= "1px solid #ccc;">
+      <tbody><tr>
+        {# Character sheet #}
+      <td>
+        <table width="100%" border= "1px solid #ccc;">
+          <tbody><tr>
+          {# Characters name #}  
+          <td style="width: 50%;">
+            <div>
+              <h3> Characters name </h3>
+              {{form.name}}
+            </div>
+          </td>
+          {# HP #}
+          <td>
+            <div>
+              <h4> HP </h4>
+              <p> Current HP / Max HP </p>
+              {{form.hp_current}}{{form.hp_max}}
+            </div>
+          </td>
+          </tr>
+          <tr>
+          {# Characters Equipment #}
+          <td>
+            <div>
+              <h4> Equipment </h4>
+              <h5> Gear </h5>
+              <ul>
+                <li>Main weapon<br />
+                    {{form.Main_weapon}}
+                </li>
+                <li>Side arm<br />
+                    {{form.Secondary_weapon}}
+                </li>
+              </ul>
+              <ul>
+                <h5> Active </h5>
+                {% for field in form|filter_fields_by_prefix:"Active" %}
+                  <li>
+                    {{ form|get_form_field:field }}
+                  </li>
+            {% endfor %}
+              </ul>
+            </div>
+          </td>
+          {# Characters Feats #}
+          <td>
+            <div>
+              <h4>Feats</h4>
+              <ul>
+                {% for field in form|filter_fields_by_prefix:"Feats" %}
+                  <li>
+                    {{ form|get_form_field:field }}
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </td>
+          </tr>
+          <tr>
+          {# Characters Ammo #}
+          <td>
+            <p>Ammo</p>
+          </td>
+          {# Characters Knapsack #}
+          <td>
+            <h4>Knapsack</h4>
+            <ul>
+              {% for field in form|filter_fields_by_prefix:"knap" %}
+                  <li>
+                    {{ form|get_form_field:field }}
+                  </li>
+              {% endfor %}
+            </ul>
+          </td>
+          </tr></tbody>
+        </table>
+      </td>
+ 
+      </tr></tbody>
+      </table>
+    </div>
+    <button type="submit" id='save'>Save</button>
+    </form>
+    <p><a href="{% url 'view' name=player_name %}"><button>Cancel</button></a></p>
+{% endblock content %}

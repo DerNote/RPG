@@ -1,0 +1,91 @@
+{% extends 'items/Player.html' %}
+
+{% block content %}
+
+<div>
+    <table width="100%" border= "1px solid #ccc;">
+      <tbody><tr>
+        {# Character sheet #}
+      <td style="width: 75%;" >
+        <table width="100%" border= "1px solid #ccc;">
+          <tbody><tr>
+          {# Characters name #}  
+          <td style="width: 50%;">
+            <div>
+              <h3> Characters name </h3>
+              <p> {{player_data.Name}} </p>
+            </div>
+          </td>
+          {# HP #}
+          <td>
+            <div>
+              <h4> HP </h4>
+              <p> {{ player_data.Hp_current}} / {{ player_data.Hp_max }} </p>
+            </div>
+          </td>
+          </tr>
+          <tr>
+          {# Characters Equipment #}
+          <td>
+            <div>
+              <h4> Equipment </h4>
+              <h5> Gear </h5>
+              <ul>
+                <li>Main weapon<br /><strong>{{player_data.Equipment.Gear.Main}}</strong>
+                  <br /><em>{{player_data.Equipment.Gear.MainDescription}}</em>
+                </li>
+                <li>Side arm<br /><strong>{{player_data.Equipment.Gear.Secondary}}</strong>
+                  <br /><em>{{player_data.Equipment.Gear.SecondaryDescription}}</em>
+                </li>
+              </ul>
+              <ul>
+                {% for items in player_data.Equipment.Active%}
+                  <li><strong>{{items.Name}}</strong>
+                  <br /><em>{{items.Description}}</em>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </td>
+          {# Characters Feats #}
+          <td>
+            <div>
+              <h4>Feats</h4>
+              <ul>
+                {% for feats in player_data.Feats %}
+                  <li>
+                    <strong>{{feats.Name}}</strong><br />
+                    <em>{{feats.Description}}</em>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </td>
+          </tr>
+          <tr>
+          {# Characters Ammo #}
+          <td>
+            <p>Ammo</p>
+            <button id="Roll">Main gun shoot</button>
+ 
+          </td>
+          {# Characters Knapsack #}
+          <td>
+            <h4>Knapsack</h4>
+            <ul>
+              {% for knap in player_data.Pouch %}
+              <li>
+                {{knap.Name}}
+              </li>
+              {% endfor %}
+            </ul>
+          </td>
+          </tr></tbody>
+        </table>
+      </td>
+ 
+      </tr></tbody>
+      </table>
+    </div>
+    <p><a href="{% url 'Edit-character' player_data.Player %}">Edit</a></p>
+{% endblock content %}
