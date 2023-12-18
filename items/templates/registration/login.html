@@ -1,0 +1,88 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body {font-family: Arial;}
+            :root {
+                --bg-color: #1f1f1f;
+                --text-color: #ffffff;
+              }
+              
+              /* Apply colors based on variables */
+              body {
+                background-color: var(--bg-color);
+                color: var(--text-color);
+              }
+            .button {
+                background-color: inherit;
+                float: left;
+                border: 1px solid #ccc;
+                color: var(--text-color);
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+                font-size: 17px;
+              }
+
+            .div1 {
+                position: relative;
+                padding: 14px 16px;
+                width: 340px;
+                top:45%;
+                left:45%;
+                border: 1px solid #ccc;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+                z-index: 1000;
+            }
+
+            .popup {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: var(--bg-color);
+                padding: 20px;
+                border: 1px solid #ccc;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+                z-index: 1000;
+            }
+        </style> 
+    </head>
+    <div class="div1">
+    <table>
+        <td style="width: 3px;">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+            <button class ="button" type="submit" style="width: 330px;">Log In</button>
+          </form></td>
+        </tr>
+        <tr>
+        <td style="width: 3px;"><button class="button" id="popupButton" style="width: 330px;" onclick="popup">Forgot password</button></td>
+        </tr>
+        </tbody>
+        </table>
+    </div>
+
+    <div id="popup" class="popup">
+        <p>Message Jonas to change your password you donkey!</p>
+        <button onclick="closePopup()" class="button">Close</button>
+    </div>
+
+    <script>
+  // Function to show the popup
+  function showPopup() {
+    document.getElementById('popup').style.display = 'block';
+  }
+
+  // Function to close the popup
+  function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+  }
+
+  // Event listener for the button click
+  document.getElementById('popupButton').addEventListener('click', showPopup);
+    </script>
+</html>

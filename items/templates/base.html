@@ -1,0 +1,209 @@
+{% load static %}
+<html>
+  <link rel="shortcut icon" type="image/ico" href="{% static 'images/favicon.ico' %}" >
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RPaluza</title>
+    <link rel="stylesheet" href="{% static 'css/style.css'%}" />
+    </head>
+    {% if user.is_authenticated %}
+        <body>
+          <!-- Tab links -->    
+            <div class="tab">
+              <button class="tablinks" onclick="openTab(event, 'Compendium')">Compendium</button>
+              <!-- Logout button no to write anything after this -->  
+              {% if user.username == 'root' %}
+                {% for players in Players %}
+                  <button class="tablinks" onclick="openTab(event, '{{ players.Player }}')">{{ players.Player }}</button>
+                {% endfor %}
+              {% else %}
+                {% for players in Players %}
+                    {% if user.username == players.Player%}
+                      <button class="tablinks" onclick="openTab(event, '{{ players.Player }}')">{{players.Player }}</button>
+                    {% endif %}
+                  {% endfor %}
+              {% endif %}
+
+              <!-- Logout button no to write anything after this -->  
+              <form action="{% url 'logout' %}" method="post" >
+                {% csrf_token %}
+                <button class="logout-btn" type="submit">Log out</button>
+              </form>
+            </div>
+
+            <table width="100%" border= "1px solid #ccc;">
+              <tbody>
+              <tr>
+              <td>
+                {% for players in Players2 %}
+                <div id="{{ players.Player }}" class="tabcontent">
+                  <embed type="text/html" src="{% url 'view' name=players.Player %}" 
+                    onload='javascript:(function(o){o.style.height=window.innerHeight + "px";}(this));' 
+                    style="height:100vh;width:100%;border:none;overflow:hidden;">
+                </div>
+              {% endfor %}
+              <div id="Compendium" class="tabcontent">
+                <table width="100%" border= "1px solid #ccc;">
+                  <tbody>
+                  <tr>
+                  <td style="width: 15%;">
+                    <table>
+                      <tbody>
+                      <tr>
+                      <td><button onclick="openTab2(event, 'Items')">Items</button></td>
+                      </tr>
+                      <tr>
+                        <td><button onclick="openTab2(event, 'Feats')">Feats</button></td>
+                      </tr>
+                      <tr>
+                        <td><button onclick="openTab2(event, 'Flaws')">Flaws</button></td>
+                      </tr>
+                      <tr>
+                        <td><button onclick="openTab2(event, 'Monsterenium')">Monsterenium</button></td>
+                      </tr>
+                      <tr>
+                        <td><button onclick="openTab2(event, 'Maps')">Maps</button></td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td style="width: 85%;">
+                    <div id="Items" class="tabcontent2">
+                      <h3>Items</h3><p>Possible items list.</p><ul>
+                            {% for item in Items %}
+                                    <li><strong>{{ item.Name }}</strong><br />{{item.Description}}</li>
+                            {% endfor %}
+                    </ul>
+                    </div>
+                    <div id="Feats" class="tabcontent2">
+                      <h3>Feats</h3><p>Possible Feat list.</p><ul>
+                        {% for feats in Feats %}
+                          {% if feats.Tag == "Feat" %}
+                                <li><strong>{{ feats.Name }}</strong><br /> {{ feats.Description }}</li>
+                          {% endif %}
+                        {% endfor %}
+                    </ul>
+                  </div>
+                    </div>
+                    <div id="Flaws" class="tabcontent2">
+                      <h3>Flaws</h3><p>Possible Flaw list.</p><ul>
+                        {% for feats in Feats %}
+                          {% if feats.Tag == "Flaw" %}
+                                <li><strong>{{ feats.Name }}</strong><br /> {{ feats.Description }}</li>
+                          {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </div>
+                    <div id="Monsterenium" class="tabcontent2">
+                      <p>Monsterenium list</p>
+                    </div>
+                    <div id="Maps" class="tabcontent2">
+                      <p>There are no maps for now</p>
+                    </div>
+                  </td>
+                  </tr>
+                  </tbody>
+                  </table>
+              </div>
+              </td>
+              <td style="width: 25%;">
+                <p>rolls/chat</p>
+                <textarea id="chat-messages" class="textarea" cols="100" rows="20"></textarea>
+                <form method='POST' action='.'>
+                  <input id='chat-meesage-input' type='text' name='content' placeholder='Your message here'>
+                  <button type= 'button' id='chat-message-submit'>Submit</button>
+                </form>
+
+              </td>
+              </tr>
+              </tbody>
+              </table>
+
+       
+           <div id="test" class="tabcontent"> <p>I do not know how you are able to see this but aight</p></div>
+  {{ room_name|json_script:"room-name" }}              
+  <script>
+      function openTab(evt, tabName) {
+          var i, tabcontent, tablinks;
+          tabcontent = document.getElementsByClassName("tabcontent");
+          for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+          }
+          tablinks = document.getElementsByClassName("tablinks");
+          for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+          }
+          document.getElementById(tabName).style.display = "block";
+          evt.currentTarget.className += " active";
+      }
+
+      function openTab2(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent2");
+        for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks2");
+        for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+        const userName = '{{user.username}}';
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/'
+            + roomName
+            + '/'
+        );
+        
+      chatSocket.onmessage = function(e) {
+          const data = JSON.parse(e.data);
+          document.querySelector('#chat-messages').value += (data.username+": " + data.message + '\n');
+      };
+
+
+      chatSocket.onclose = function(e){
+          console.log("chat socket closed");
+      }
+      
+      window.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('#chat-message-submit').onclick = function(e){
+            console.log('clicked the submit button');
+            e.preventDefault();
+            const messageInputDom = document.querySelector('#chat-meesage-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'username': userName,
+                'room': roomName
+            }));
+            messageInputDom.value = '';
+            return false;
+        };
+      });
+
+      document.getElementById('Roll').addEventListener('click', function() {
+        fetch('random')
+        .then(response => response.json())
+        .then(data =>  rolly = data.message);
+        chatSocket.send(JSON.stringify({
+          'message': rolly,
+          'username': userName,
+          'room': roomName
+      }));
+        
+      });
+  </script>
+    {% else %}
+      <div class="div1">
+      <p>You are not logged in</p>
+      <a href="{% url 'login' %}">Log In</a>
+      </div>
+    {% endif %}   
+</html>
