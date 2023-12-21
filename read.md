@@ -6,3 +6,5 @@ python3 manage.py runserver
 ---
 pip install -U channels["daphne"]
 pip install python-dotenv
+pip install channels_redis
+pip install pymongo[snappy,gssapi,srv,tls]
