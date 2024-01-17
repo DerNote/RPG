@@ -66,12 +66,15 @@
           {# Characters Ammo #}
           <td>
             <p>Ammo</p>
-            <button id="Roll">Main gun shoot</button>
+            
  
           </td>
           {# Characters Knapsack #}
           <td>
             <h4>Knapsack</h4>
+            <h5>Money</h5>
+            <p>{{player_data.Money}}<p>
+            <h5>Backpack<h5>
             <ul>
               {% for knap in player_data.Pouch %}
               <li>

@@ -178,7 +178,7 @@
                 })),
             };
     
-            const playerName = 'Martynas';
+            const playerName = '{{user.username}}';
             const csrftoken = getCookie('csrftoken');
     
             fetch(`/RPG/shop/${playerName}/update`, {

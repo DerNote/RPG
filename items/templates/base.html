@@ -119,7 +119,7 @@
                   <input id='chat-meesage-input' type='text' name='content' placeholder='Your message here'>
                   <button type= 'button' id='chat-message-submit'>Submit</button>
                 </form>
-
+                <button id="Roll">Main gun shoot</button>
               </td>
               </tr>
               </tbody>
@@ -196,7 +196,7 @@
       document.getElementById('Roll').addEventListener('click', function() {
         fetch('random')
         .then(response => response.json())
-        .then(data =>  rolly = data.message);
+        .then(data =>  rolly = (data.message+1));
         chatSocket.send(JSON.stringify({
           'message': rolly,
           'username': userName,
