@@ -11,7 +11,6 @@
           <!-- Tab links -->    
             <div class="tab">
               <button class="tablinks" onclick="openTab(event, 'Compendium')">Compendium</button>
-              <!-- Logout button no to write anything after this -->  
               {% if user.username == 'root' %}
                 {% for players in Players %}
                   <button class="tablinks" onclick="openTab(event, '{{ players.Player }}')">{{ players.Player }}</button>
@@ -24,7 +23,9 @@
                   {% endfor %}
               {% endif %}
 
-              <!-- Logout button no to write anything after this -->  
+              <button class="tablinks" onclick="openTab(event, 'Shop')">Shop</button>
+
+              <!-- Logout button do not write anything after this -->  
               <form action="{% url 'logout' %}" method="post" >
                 {% csrf_token %}
                 <button class="logout-btn" type="submit">Log out</button>
@@ -40,6 +41,11 @@
                   <embed type="text/html" src="{% url 'view' name=players.Player %}" 
                     onload='javascript:(function(o){o.style.height=window.innerHeight + "px";}(this));' 
                     style="height:100vh;width:100%;border:none;overflow:hidden;">
+                </div>
+                <div id="Shop" class="tabcontent">
+                  <embed type="text/html" src="{% url 'shop' name='Martynas' %}" 
+                  onload='javascript:(function(o){o.style.height=window.innerHeight + "px";}(this));' 
+                  style="height:100vh;width:100%;border:none;overflow:hidden;">
                 </div>
               {% endfor %}
               <div id="Compendium" class="tabcontent">
@@ -118,7 +124,6 @@
               </tr>
               </tbody>
               </table>
-
        
            <div id="test" class="tabcontent"> <p>I do not know how you are able to see this but aight</p></div>
   {{ room_name|json_script:"room-name" }}              

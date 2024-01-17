@@ -9,7 +9,7 @@ from .forms import PlayerForm
 # Create your views here.
 
 Feat_stuff = list(Feats_collection.find())
-Active_stuff = list(Items_collection.find({}, {'_id': 0, 'Name': 1, 'Description': 1, 'Tag': 1}))
+Active_stuff = list(Items_collection.find({}, {'_id': 0, 'Name': 1, 'Description': 1, 'Tag': 1, 'Cost': 1}))
 
 def index(request):
     Items = Items_collection.find()
@@ -110,5 +110,18 @@ def update(request, name):
         player_datax = Player_collection.find_one({'Player': name}, {'_id': 0, 'Name': 1,'Feats':1,'Equipment':1,'Pouch':1,'Hp_current':1,'Hp_max':1, 'Player': 1})
         return redirect('view', player_datax["Player"])
     
-def iframe_test(request):
-    return render(request, 'items/iframe_test.html')
+def screen(request):
+    players = list(Player_collection.find())
+    return render(request, 'items/GM.html', {'Players': players})
+
+def damage(request, name, value):
+    if request.method == 'GET' or request.method == 'POST':
+        # Your logic to handle the damage here
+        print("fill+"+name+str(value))
+        return JsonResponse({'message': f'Damage dealt to {name}: {value}'})
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+def shop(request, name):
+    Test_data = (Player_collection.find_one({'Player': name}, {'_id': 0, 'Money': 1}))
+    return render(request, 'items/shop.html', {'Items':Active_stuff, 'Money': Test_data})

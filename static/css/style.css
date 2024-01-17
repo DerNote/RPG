@@ -73,3 +73,9 @@
     border: 1px solid #ccc;
     border-top: none;
   }
+
+  .gmButton {
+    background-color: inherit;
+    color: #ccc;
+    padding: 7px 21px;
+  }

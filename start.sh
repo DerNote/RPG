@@ -44,4 +44,4 @@ else
     echo "pymongo is installed"
 fi
 
-#/usr/bin/python3 manage.py runserver
+/usr/bin/python3 manage.py runserver

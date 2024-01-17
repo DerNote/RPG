@@ -1,0 +1,140 @@
+<html>
+    {% load static %}
+    <link rel="shortcut icon" type="image/ico" href="{% static 'images/favicon.ico' %}" >
+    <head>
+      <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+      <style>
+        
+      </style>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Shop</title>
+    </head>
+<body>
+{% if user.is_authenticated %}
+<div>
+    <button>Weapon</button>
+    <button>Active</button>
+    <button>Supplies</button>
+    <button>Magical</button>
+    <button>Misc</button>
+</div>
+    <!-- WIP for loop to create divs for tabs -->
+<table border= "1px solid #ccc;">
+    <tbody>
+        <tr>
+            <td>
+                <table border= "1px solid #ccc;">
+                    <tbody>
+                        {% for item in Items %}
+                        <tr><td>
+                        <div>
+                            <li><strong title="{{ item.Description }}">{{ item.Name }}</strong><br/><strong>Cost: </strong>{{ item.Cost}}</li>
+                            <button class="add-to-cart" data-name="{{ item.Name }}" data-cost="{{ item.Cost }}">add</button>
+                        </div>
+                        </tr></td>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+            <td>
+                <div>
+                    <h2>Available funds</h2>
+                    <p>{{Money.Money}}</p>
+                    <h2>Shopping Cart</h2>
+                    <ul id="cart-items"></ul>
+                    <p id="total-cost"></p> <!-- Total cost display -->
+                    <button id="buy-button">Buy</button>
+                    <button id="clear-cart-button">Clear Cart</button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+<script>
+    // Initialize an empty shopping cart
+    let shoppingCart = [];
+
+    // Function to add item to shopping cart
+    function addToCart(name, cost) {
+        shoppingCart.push({ name, cost });
+        updateCartDisplay();
+        console.log(`Added ${name} to cart.`);
+        // You can perform additional logic here like updating UI or sending cart data to the server
+    }
+
+    // Function to update the cart display
+    function updateCartDisplay() {
+        const cartItemsList = document.getElementById('cart-items');
+        cartItemsList.innerHTML = ''; // Clear previous contents
+
+        shoppingCart.forEach((item, index) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${item.name} - $${item.cost}`;
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.addEventListener('click', () => removeItemFromCart(index));
+
+            listItem.appendChild(removeButton);
+            cartItemsList.appendChild(listItem);
+        });
+
+        // Calculate total cost and display above the "Buy" button
+        const totalCostElement = document.getElementById('total-cost');
+        const totalCost = shoppingCart.reduce((acc, item) => acc + parseFloat(item.cost), 0);
+        totalCostElement.textContent = `Total Cost: $${totalCost.toFixed(2)}`;
+    }
+
+    // Function to remove item from shopping cart
+    function removeItemFromCart(index) {
+        shoppingCart.splice(index, 1);
+        updateCartDisplay();
+    }
+
+    // Function to create JSON from shopping cart and log in console
+    function createJSON() {
+        const totalCost = shoppingCart.reduce((acc, item) => acc + parseFloat(item.cost), 0);
+        if (totalCost === 0) {
+            window.alert('Shopping cart is empty.');
+        } else if (totalCost > '{{ Money.Money }}') {
+            window.alert('Total cost exceeds available funds.');
+        } else {
+            const jsonString = JSON.stringify(shoppingCart);
+            console.log('Generated JSON:', jsonString);
+            // Proceed with purchase logic (send data to server, update UI, etc.)
+        }
+    }
+
+    // Function to clear the shopping cart
+    function clearCart() {
+        shoppingCart = [];
+        updateCartDisplay();
+    }
+
+    // Event listener for "Buy" button click
+    const buyButton = document.getElementById('buy-button');
+    buyButton.addEventListener('click', createJSON);
+
+    // Event listener for "Clear Cart" button click
+    const clearCartButton = document.getElementById('clear-cart-button');
+    clearCartButton.addEventListener('click', clearCart);
+
+    // Event listener for add to cart button clicks
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const itemName = this.getAttribute('data-name');
+            const itemCost = this.getAttribute('data-cost');
+            addToCart(itemName, itemCost);
+        });
+    });
+</script>
+{% else %}
+<div class="div1">
+<p>You are not logged in</p>
+<a href="{% url 'login' %}">Log In</a>
+</div>
+{% endif %}  
+</html>

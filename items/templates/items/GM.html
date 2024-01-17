@@ -1,0 +1,58 @@
+{% load static %}
+<html>
+  <link rel="shortcut icon" type="image/ico" href="{% static 'images/favicon.ico' %}" >
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RPaluza</title>
+    <link rel="stylesheet" href="{% static 'css/style.css'%}" />
+  </head>
+  <body>
+    <table border= "1px solid #ccc;">
+        <tbody>
+            {% for player in Players %}
+            <tr>
+                <td>{{player.Player}}</td>
+                <td>{{player.Name}}</td>
+                <td>{{player.Hp_current}}</td>
+                <td>{{player.Hp_max}}</td>
+                <td><button class="gmButton"onclick="sendDamage('{{player.Player}}', 3)">-3HP</button></a></td>
+                <td><button class="gmButton" onclick="sendDamage('{{player.Player}}', 2)">-2HP</button></td>
+                <td><button class="gmButton"onclick="sendDamage('{{player.Player}}', 1)">-1HP</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </body>
+  
+<script>
+    function getCookie(name) {
+        const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return cookieValue ? cookieValue.pop() : '';
+      }
+
+    function sendDamage(playerName, damageValue) {
+        const csrftoken = getCookie('csrftoken'); // Function to retrieve the CSRF token from cookies
+      
+        fetch(`/RPG/GM/${playerName}/${damageValue}`, {
+          method: 'POST', // or 'GET' if your view expects a GET request
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken // Include the CSRF token in the request headers
+          },
+          credentials: 'same-origin' // Include this line if your frontend and backend are on the same origin
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          // Handle success response if needed
+          console.log('Damage sent successfully');
+        })
+        .catch(error => {
+          // Handle error
+          console.error('There was an error sending damage:', error);
+        });
+      }
+    </script>
+</html>
