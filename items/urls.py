@@ -12,5 +12,6 @@ urlpatterns = [
     path('RPG/save/<str:name>', views.update, name='update'),
     path('RPG/GM', views.screen),
     path('RPG/GM/<str:name>/<int:value>', views.damage, name='damage'),
-    path('RPG/shop/<str:name>', views.shop, name='shop')
+    path('RPG/shop/<str:name>', views.shop, name='shop'),
+    path('RPG/shop/<str:name>/update', views.shopUpdate, name='process_json')
 ]

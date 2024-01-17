@@ -4,42 +4,111 @@
     <head>
       <link rel="stylesheet" href="{% static 'css/style.css' %}" />
       <style>
-        
+        .category ul li {
+            margin-bottom: 10px; /* Adjust the value as needed */
+        }
       </style>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>Shop</title>
     </head>
 <body>
 {% if user.is_authenticated %}
-<div>
-    <button>Weapon</button>
-    <button>Active</button>
-    <button>Supplies</button>
-    <button>Magical</button>
-    <button>Misc</button>
+<div class="tabs">
+    <button class="tablinks" onclick="showCategory('weapon')">Weapons</button>
+    <button class="tablinks" onclick="showCategory('active')">Active</button>
+    <button class="tablinks" onclick="showCategory('supplies')">Supplies</button>
+    <button class="tablinks" onclick="showCategory('magical')">Magical</button>
+    <button class="tablinks" onclick="showCategory('misc')">Misc</button>
 </div>
-    <!-- WIP for loop to create divs for tabs -->
 <table border= "1px solid #ccc;">
     <tbody>
         <tr>
             <td>
                 <table border= "1px solid #ccc;">
                     <tbody>
-                        {% for item in Items %}
-                        <tr><td>
-                        <div>
-                            <li><strong title="{{ item.Description }}">{{ item.Name }}</strong><br/><strong>Cost: </strong>{{ item.Cost}}</li>
-                            <button class="add-to-cart" data-name="{{ item.Name }}" data-cost="{{ item.Cost }}">add</button>
+
+                        <div id="weaponItems" class="category">
+                            <h2>Weapons</h2>
+                            <ul>
+                                {% for item in Items %}
+                                    {% if item.Type == 'weapon' %}
+                                        <li>
+                                            <strong title="{{ item.Description }}">{{ item.Name }}</strong><br/>
+                                            <strong>Cost: </strong>{{ item.Cost }}
+                                            <button class="add-to-cart" data-name="{{ item.Name }}" data-cost="{{ item.Cost }}">Add</button>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
                         </div>
-                        </tr></td>
-                        {% endfor %}
+                        
+                        <div id="activeItems" class="category">
+                            <h2>Active Items</h2>
+                            <ul>
+                                {% for item in Items %}
+                                    {% if item.Type == 'active' %}
+                                        <li>
+                                            <strong title="{{ item.Description }}">{{ item.Name }}</strong><br/>
+                                            <strong>Cost: </strong>{{ item.Cost }}
+                                            <button class="add-to-cart" data-name="{{ item.Name }}" data-cost="{{ item.Cost }}">Add</button>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <!-- Repeat the same structure for supplies and magical items -->
+                        <div id="suppliesItems" class="category">
+                            <h2>Supplies</h2>
+                            <ul>
+                                {% for item in Items %}
+                                    {% if item.Type == 'supplies' %}
+                                        <li>
+                                            <strong title="{{ item.Description }}">{{ item.Name }}</strong><br/>
+                                            <strong>Cost: </strong>{{ item.Cost }}
+                                            <button class="add-to-cart" data-name="{{ item.Name }}" data-cost="{{ item.Cost }}">Add</button>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <div id="magicalItems" class="category">
+                            <h2>Magical Items</h2>
+                            <ul>
+                                {% for item in Items %}
+                                    {% if item.Type == 'magical' %}
+                                        <li>
+                                            <strong title="{{ item.Description }}">{{ item.Name }}</strong><br/>
+                                            <strong>Cost: </strong>{{ item.Cost }}
+                                            <button class="add-to-cart" data-name="{{ item.Name }}" data-cost="{{ item.Cost }}">Add</button>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div id="Misc" class="category">
+                            <h2>Misc Items</h2>
+                            <ul>
+                                {% for item in Items %}
+                                    {% if item.Type == 'Misc' %}
+                                        <li>
+                                            <strong title="{{ item.Description }}">{{ item.Name }}</strong><br/>
+                                            <strong>Cost: </strong>{{ item.Cost }}
+                                            <button class="add-to-cart" data-name="{{ item.Name }}" data-cost="{{ item.Cost }}">Add</button>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </tbody>
                 </table>
             </td>
             <td>
                 <div>
                     <h2>Available funds</h2>
-                    <p>{{Money.Money}}</p>
+                    <p id="money-value">{{ Money.Money }}</p>
                     <h2>Shopping Cart</h2>
                     <ul id="cart-items"></ul>
                     <p id="total-cost"></p> <!-- Total cost display -->
@@ -93,17 +162,87 @@
         updateCartDisplay();
     }
 
-    // Function to create JSON from shopping cart and log in console
+    // Function to create JSON from shopping cart and send damage
     function createJSON() {
         const totalCost = shoppingCart.reduce((acc, item) => acc + parseFloat(item.cost), 0);
+    
         if (totalCost === 0) {
             window.alert('Shopping cart is empty.');
-        } else if (totalCost > '{{ Money.Money }}') {
+        } else if (totalCost > parseFloat('{{ Money.Money }}')) {
             window.alert('Total cost exceeds available funds.');
         } else {
-            const jsonString = JSON.stringify(shoppingCart);
-            console.log('Generated JSON:', jsonString);
-            // Proceed with purchase logic (send data to server, update UI, etc.)
+            const jsonData = {
+                totalCost: totalCost.toFixed(2),
+                items: shoppingCart.map(item => ({
+                    name: item.name,
+                })),
+            };
+    
+            const playerName = 'Martynas';
+            const csrftoken = getCookie('csrftoken');
+    
+            fetch(`/RPG/shop/${playerName}/update`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(jsonData),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+                // Check if the Content-Type is application/json
+                const contentType = response.headers.get('Content-Type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Invalid content type. Expected application/json.');
+                }
+    
+                return response.json(); // Assuming the server sends a JSON response
+            })
+            .then(data => {
+                // Log the entire server response for debugging
+                console.log('Server response:', data);
+            
+                // Check if the response is a valid object
+                if (data && typeof data === 'object') {
+                    // Check if the 'message' property exists
+                    if ('message' in data && data.message === 'JSON data received successfully') {
+                        // The server indicates success with the expected message
+                        const moneyElement = document.getElementById('money-value');
+                        console.log(moneyElement.textContent)
+
+                        // Check if the value is a valid number
+                        if (!isNaN(moneyElement.textContent)) {
+                            const updatedMoney = moneyElement.textContent - totalCost;
+                            moneyElement.textContent = `${updatedMoney.toFixed(2)}`;
+            
+                            // Proceed with additional UI updates or logic if needed
+            
+                            // Clear the shopping cart
+                            shoppingCart = [];
+                            updateCartDisplay();
+                        } else {
+                            console.error('Invalid or missing updatedMoney value in the server response:');
+                            // Handle the case where the server response contains an invalid or missing updatedMoney value
+                        }
+                    } else {
+                        console.error('Unexpected server response:', data);
+                        // Handle the case where the server response does not match the expected success message
+                    }
+                } else {
+                    console.error('Invalid server response:', data);
+                    // Handle the case where the server response is not a valid object
+                }
+            })
+            .catch(error => {
+                console.error('There was an error sending the shopping cart:', error);
+                // Handle error or display an appropriate message to the user
+            });
         }
     }
 
@@ -130,6 +269,25 @@
             addToCart(itemName, itemCost);
         });
     });
+    function getCookie(name) {
+        const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return cookieValue ? cookieValue.pop() : '';
+      }
+
+    // Default to showing the 'weapon' category on page load
+    showCategory('weapon');
+
+    function showCategory(category) {
+        // Hide all categories
+        document.querySelectorAll('.category').forEach(function(categoryDiv) {
+            categoryDiv.style.display = 'none';
+        });
+
+        // Show the selected category
+        document.getElementById(category + 'Items').style.display = 'block';
+    }
+
+
 </script>
 {% else %}
 <div class="div1">

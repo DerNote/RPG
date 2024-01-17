@@ -9,7 +9,7 @@ from .forms import PlayerForm
 # Create your views here.
 
 Feat_stuff = list(Feats_collection.find())
-Active_stuff = list(Items_collection.find({}, {'_id': 0, 'Name': 1, 'Description': 1, 'Tag': 1, 'Cost': 1}))
+Active_stuff = list(Items_collection.find({}, {'_id': 0, 'Name': 1, 'Description': 1, 'Tag': 1,'Type':1 ,'Cost': 1}))
 
 def index(request):
     Items = Items_collection.find()
@@ -125,3 +125,28 @@ def damage(request, name, value):
 def shop(request, name):
     Test_data = (Player_collection.find_one({'Player': name}, {'_id': 0, 'Money': 1}))
     return render(request, 'items/shop.html', {'Items':Active_stuff, 'Money': Test_data})
+
+def shopUpdate(request, name):
+    if request.method == 'GET' or request.method == 'POST':
+        try:
+            json_data = json.loads(request.body)
+            total_cost = json_data.get('totalCost')
+            items = json_data.get('items', [])
+
+            # Process the data as needed (e.g., store it in the database)
+            print(items)
+            curentFunds = (Player_collection.find_one({'Player': name}, {'_id': 0, 'Money': 1}))
+            money_value = curentFunds.get('Money', 0.0)
+            updatedFunds = money_value - float(total_cost)
+            query = {'Player': name}
+            money_data={'Money': updatedFunds}
+            new_values = {'$set': money_data}
+            Player_collection.update_one(query, new_values)
+            # Respond with a success message
+            response_data = {'message': 'JSON data received successfully'}
+            return JsonResponse(response_data)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
